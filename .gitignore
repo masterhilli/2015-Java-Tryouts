@@ -17,6 +17,7 @@ $RECYCLE.BIN/
 # Ignore other files
 *.csv
 *.class
+GenerateHours.jar
 
 # Windows shortcuts
 *.lnk
