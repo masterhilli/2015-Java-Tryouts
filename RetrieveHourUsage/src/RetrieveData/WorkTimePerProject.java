@@ -48,7 +48,7 @@ public class WorkTimePerProject {
 	private String formatOutput(String key, TimeSpanInPercentOfWork value) {
 		if (value != null) {
 			return (key + ":\t" + value.getHours() + ":" + value.getMinutes() + "\t" + value.getPercentOfWork()
-					+ "%\n");
+					+ "%\t" +  value.getHours() +"." + ((long)((100.0/60.0) *value.getMinutes())) + "\n");
 		} else {
 			return key + ": No data available";
 		}
