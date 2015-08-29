@@ -13,11 +13,11 @@
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="${dir.jarfile}/bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="C:/catalysts/IDE/EclipseIDE/eclipseEE/plugins/org.junit_4.12.0.v201504281640/junit.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="C:/catalysts/IDE/EclipseIDE/eclipseEE/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="C:/catalysts/IDE/EclipseIDE/eclipseEE/plugins/org.mozilla.universalchardet/juniversalchardet-1.0.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="D:/IDE/EclipseIDE/eclipseEE/plugins/org.junit_4.12.0.v201504281640/junit.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="D:/IDE/EclipseIDE/eclipseEE/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="D:/IDE/EclipseIDE/eclipseEE/plugins/org.mozilla.universalchardet/juniversalchardet-1.0.3.jar"/>
         </jar>
     </target> 
-	<copy file="GenerateHours.jar" todir="C:\catalysts\administrativa\timetracking">
+	<copy file="GenerateHours.jar" todir="D:\administrativa\timetracking">
 	</copy>
 </project>
