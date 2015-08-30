@@ -15,7 +15,7 @@ public class ImageResizerTest {
 	
 	@Test
 	public void testCreateImagesOutOfOriginalPath_InputWrongPath_ReturnsFalse() {
-		assertTrue(ImageResizer.createImagesOutOfOriginalPath(TEST_FOLDER_PATH + "incorrect\\test1.jpg", TEST_FOLDER_OUTPUT_PATH));
+		assertFalse(ImageResizer.createImagesOutOfOriginalPath(TEST_FOLDER_PATH + "incorrect\\test1.jpg", TEST_FOLDER_OUTPUT_PATH));
 	}
 
 
