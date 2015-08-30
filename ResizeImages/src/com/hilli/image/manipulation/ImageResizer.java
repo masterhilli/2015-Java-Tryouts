@@ -4,20 +4,21 @@ import java.awt.AlphaComposite;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import org.apache.sanselan.ImageReadException;
-import org.apache.sanselan.Sanselan;
-import org.apache.sanselan.common.IImageMetadata;
-import org.apache.sanselan.common.ImageMetadata;
-import org.apache.sanselan.formats.jpeg.JpegImageMetadata;
-import org.apache.sanselan.formats.tiff.TiffImageMetadata;
-import org.apache.sanselan.formats.tiff.constants.ExifTagConstants;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
+import com.drew.metadata.exif.ExifIFD0Directory;
+import com.drew.metadata.jpeg.JpegDirectory;
+
 import org.apache.commons.io.FilenameUtils;
 
 public class ImageResizer {
@@ -30,21 +31,24 @@ public class ImageResizer {
 
 			File imageToRead = new File(path);
 			String fileName = FilenameUtils.removeExtension(imageToRead.getName());
-			BufferedImage originalImage = ImageIO.read(imageToRead);
 
-			System.out.println("Dimension, width: " + originalImage.getWidth() + " height: " + originalImage.getHeight()
-					+ " NAME: " + fileName);
+			// first rotate the image depending on EXIF Information
+			BufferedImage rotatedImage = rotateImage(imageToRead);
 
-			Dimension originalFileDimension = getCorrectDimensionFromFile(
-					new Dimension(originalImage.getWidth(), originalImage.getHeight()), imageToRead);
+			// scale dimension of file
+			Dimension newDimension = getScaledDimension(
+					new Dimension(rotatedImage.getWidth(), rotatedImage.getHeight()), maximumDimension);
 
-			Dimension newDimension = getScaledDimension(originalFileDimension, maximumDimension);
+			createImageByType(outputPath + fileName, rotatedImage, JPG, newDimension, true);
 
-			createImageByType(outputPath + fileName, originalImage, JPG, newDimension, true);
-			createImageByType(outputPath + fileName, originalImage, JPG, newDimension, false);
-
-		} catch (IOException e) {
-			// System.out.println(e.getMessage());
+		} catch (IOException ioe) {
+			System.out.println(ioe.getMessage());
+			return false;
+		} catch (ImageProcessingException ipex) {
+			System.out.println(ipex.getMessage());
+			return false;
+		} catch (MetadataException mex){
+			System.out.println(mex.getMessage());
 			return false;
 		}
 		return true;
@@ -93,9 +97,7 @@ public class ImageResizer {
 		} else {
 			resizeImage = resizeImage(originalImage, origtype, newDimension);
 		}
-		ImageIO.write(resizeImage, type, new File(outputFilePath + (withHint ? "_hint." : ".") + type));
-		System.out.println("Dimension, width: " + newDimension.width + " height: " + newDimension.height + " NAME: "
-				+ outputFilePath + (withHint ? "_hint." : ".") + type);
+		ImageIO.write(resizeImage, type, new File(outputFilePath + "." + type));
 	}
 
 	private static BufferedImage resizeImage(BufferedImage originalImage, int type, Dimension newDimension) {
@@ -122,119 +124,79 @@ public class ImageResizer {
 		return resizedImage;
 	}
 
-	private static Dimension getCorrectDimensionFromFile(Dimension originalReadDimension, File imageFile) {
-		Dimension correctDimension = null;
-		;
-		try {
-			JpegImageMetadata metadata =  (JpegImageMetadata)Sanselan.getMetadata(imageFile);
+	private static BufferedImage rotateImage(File originalFile) throws IOException, ImageProcessingException, MetadataException{
+		BufferedImage originalImageBuffer = ImageIO.read(originalFile);
 
-//			ArrayList myArrayList = metadata.getItems();
-			TiffImageMetadata exifData = null;
-			if (metadata != null)
-				exifData=metadata.getExif();
-			
-			int orientation = 0;
-			if (exifData != null) {
-				orientation = exifData.findField(ExifTagConstants.EXIF_TAG_ORIENTATION).getIntValue();
-//				int width = exifData.findField(ExifTagConstants.EXIF_TAG_IMAGE_WIDTH).getIntValue();
-//				int height = exifData.findField(ExifTagConstants.EXIF_TAG_IMAGE_HEIGHT).getIntValue();
-			}
-			
-			
-			correctDimension = Sanselan.getImageSize(imageFile);
-			
-			if (orientation == 6 || orientation == 8) { // 6 = 90degrees & 8 = 270 degrees
-				correctDimension = new Dimension (correctDimension.height, correctDimension.width);
-			}
-		} catch (ImageReadException e) {
-			correctDimension = originalReadDimension;
-		} catch (IOException e) {
-			correctDimension = originalReadDimension;
-		}
+		Metadata metadata = ImageMetadataReader.readMetadata(originalFile);
+		int orientation = getOrientation(metadata);
 
-		return correctDimension;
+		Dimension dimensionFromMetadata = getFileDimensionFromMetadata(metadata);
+
+		AffineTransform affineTransform = getAffineTransformFromMetadata(orientation, dimensionFromMetadata);
+
+		AffineTransformOp affineTransformOp = new AffineTransformOp(affineTransform, AffineTransformOp.TYPE_BILINEAR);
+		BufferedImage destinationImage = new BufferedImage(originalImageBuffer.getHeight(),
+				originalImageBuffer.getWidth(), originalImageBuffer.getType());
+		destinationImage = affineTransformOp.filter(originalImageBuffer, destinationImage);
+		return destinationImage;
 	}
 
+	private static AffineTransform getAffineTransformFromMetadata(int orientation, Dimension dimensionFromMetadata) {
+		AffineTransform affineTransform = new AffineTransform();
+
+		switch (orientation) {
+		case 1:
+			break;
+		case 2: // Flip X
+			affineTransform.scale(-1.0, 1.0);
+			affineTransform.translate(-dimensionFromMetadata.width, 0);
+			break;
+		case 3: // PI rotation
+			affineTransform.translate(dimensionFromMetadata.width, dimensionFromMetadata.height);
+			affineTransform.rotate(Math.PI);
+			break;
+		case 4: // Flip Y
+			affineTransform.scale(1.0, -1.0);
+			affineTransform.translate(0, -dimensionFromMetadata.height);
+			break;
+		case 5: // - PI/2 and Flip X
+			affineTransform.rotate(-Math.PI / 2);
+			affineTransform.scale(-1.0, 1.0);
+			break;
+		case 6: // -PI/2 and -width
+			affineTransform.translate(dimensionFromMetadata.height, 0);
+			affineTransform.rotate(Math.PI / 2);
+			break;
+		case 7: // PI/2 and Flip
+			affineTransform.scale(-1.0, 1.0);
+			affineTransform.translate(-dimensionFromMetadata.height, 0);
+			affineTransform.translate(0, dimensionFromMetadata.width);
+			affineTransform.rotate(3 * Math.PI / 2);
+			break;
+		case 8: // PI / 2
+			affineTransform.translate(0, dimensionFromMetadata.width);
+			affineTransform.rotate(3 * Math.PI / 2);
+			break;
+		default:
+			break;
+		}
+		return affineTransform;
+	}
+
+	private static Dimension getFileDimensionFromMetadata(Metadata metadata) throws MetadataException {
+		JpegDirectory jpegDirectory = (JpegDirectory) metadata.getDirectory(JpegDirectory.class);
+		return new Dimension (jpegDirectory.getImageWidth(), jpegDirectory.getImageHeight());
+	}
+
+	private static int getOrientation(Metadata metadata) {
+		ExifIFD0Directory exifIFD0Directory = metadata.getDirectory(ExifIFD0Directory.class);
+		
+		int orientation = 1;
+		try {
+			orientation = exifIFD0Directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return orientation;
+	}
 }
-
-// Gona have to look into that ... *grml*
-//	import java.awt.geom.AffineTransform;
-//	import java.awt.image.AffineTransformOp;
-//	import java.awt.image.BufferedImage;
-//	import java.io.File;
-//
-//	import javax.imageio.ImageIO;
-//
-//	import com.drew.imaging.ImageMetadataReader;
-//	import com.drew.metadata.Metadata;
-//	import com.drew.metadata.exif.ExifIFD0Directory;
-//	import com.drew.metadata.jpeg.JpegDirectory;
-
-//	public class Main {
-//
-//	    private static String inFilePath = "C:\\Users\\TapasB\\Desktop\\MHIS031522.jpg";
-//	    private static String outFilePath = "C:\\Users\\TapasB\\Desktop\\MHIS031522-rotated.jpg";
-//
-//	    public static void main(String[] args) throws Exception {
-//	        File imageFile = new File(inFilePath);
-//	        BufferedImage originalImage = ImageIO.read(imageFile);
-//
-//	        Metadata metadata = ImageMetadataReader.readMetadata(imageFile);
-//	        ExifIFD0Directory exifIFD0Directory = metadata.getDirectory(ExifIFD0Directory.class);
-//	        JpegDirectory jpegDirectory = (JpegDirectory) metadata.getDirectory(JpegDirectory.class);
-//
-//	        int orientation = 1;
-//	        try {
-//	            orientation = exifIFD0Directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
-//	        } catch (Exception ex) {
-//	            ex.printStackTrace();
-//	        }
-//
-//	        int width = jpegDirectory.getImageWidth();
-//	        int height = jpegDirectory.getImageHeight();
-//
-//	        AffineTransform affineTransform = new AffineTransform();
-//
-//	        switch (orientation) {
-//	        case 1:
-//	            break;
-//	        case 2: // Flip X
-//	            affineTransform.scale(-1.0, 1.0);
-//	            affineTransform.translate(-width, 0);
-//	            break;
-//	        case 3: // PI rotation
-//	            affineTransform.translate(width, height);
-//	            affineTransform.rotate(Math.PI);
-//	            break;
-//	        case 4: // Flip Y
-//	            affineTransform.scale(1.0, -1.0);
-//	            affineTransform.translate(0, -height);
-//	            break;
-//	        case 5: // - PI/2 and Flip X
-//	            affineTransform.rotate(-Math.PI / 2);
-//	            affineTransform.scale(-1.0, 1.0);
-//	            break;
-//	        case 6: // -PI/2 and -width
-//	            affineTransform.translate(height, 0);
-//	            affineTransform.rotate(Math.PI / 2);
-//	            break;
-//	        case 7: // PI/2 and Flip
-//	            affineTransform.scale(-1.0, 1.0);
-//	            affineTransform.translate(-height, 0);
-//	            affineTransform.translate(0, width);
-//	            affineTransform.rotate(3 * Math.PI / 2);
-//	            break;
-//	        case 8: // PI / 2
-//	            affineTransform.translate(0, width);
-//	            affineTransform.rotate(3 * Math.PI / 2);
-//	            break;
-//	        default:
-//	            break;
-//	        }       
-//
-//	        AffineTransformOp affineTransformOp = new AffineTransformOp(affineTransform, AffineTransformOp.TYPE_BILINEAR);  
-//	        BufferedImage destinationImage = new BufferedImage(originalImage.getHeight(), originalImage.getWidth(), originalImage.getType());
-//	        destinationImage = affineTransformOp.filter(originalImage, destinationImage);
-//	        ImageIO.write(destinationImage, "jpg", new File(outFilePath));
-//	    }
-//	}
