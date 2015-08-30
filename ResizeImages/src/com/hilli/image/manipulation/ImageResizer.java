@@ -22,11 +22,18 @@ import com.drew.metadata.jpeg.JpegDirectory;
 import org.apache.commons.io.FilenameUtils;
 
 public class ImageResizer {
-	private static final Dimension maximumDimension = new Dimension(1500, 1500);
+	private Dimension maximumDimension = new Dimension(1500, 1500);
+	public Dimension getMaximumDimension() {
+		return maximumDimension;
+	}
 
 	private static final String JPG = "jpg";
+	
+	public ImageResizer (Dimension maxDimension) {
+		maximumDimension = maxDimension;
+	}
 
-	public static boolean createImagesOutOfOriginalPath(String path, String outputPath) {
+	public boolean createImagesOutOfOriginalPath(String path, String outputPath) {
 		try {
 
 			File imageToRead = new File(path);
@@ -134,10 +141,14 @@ public class ImageResizer {
 
 		AffineTransform affineTransform = getAffineTransformFromMetadata(orientation, dimensionFromMetadata);
 
-		AffineTransformOp affineTransformOp = new AffineTransformOp(affineTransform, AffineTransformOp.TYPE_BILINEAR);
-		BufferedImage destinationImage = new BufferedImage(originalImageBuffer.getHeight(),
-				originalImageBuffer.getWidth(), originalImageBuffer.getType());
-		destinationImage = affineTransformOp.filter(originalImageBuffer, destinationImage);
+		BufferedImage destinationImage = originalImageBuffer;
+		if (affineTransform != null) {
+			AffineTransformOp affineTransformOp = new AffineTransformOp(affineTransform, AffineTransformOp.TYPE_BILINEAR);
+			
+			destinationImage = new BufferedImage(originalImageBuffer.getHeight(),
+											 originalImageBuffer.getWidth(), originalImageBuffer.getType());
+			destinationImage = affineTransformOp.filter(originalImageBuffer, destinationImage);
+		} 
 		return destinationImage;
 	}
 
@@ -146,6 +157,7 @@ public class ImageResizer {
 
 		switch (orientation) {
 		case 1:
+			affineTransform = null;
 			break;
 		case 2: // Flip X
 			affineTransform.scale(-1.0, 1.0);
@@ -178,6 +190,7 @@ public class ImageResizer {
 			affineTransform.rotate(3 * Math.PI / 2);
 			break;
 		default:
+			affineTransform = null;
 			break;
 		}
 		return affineTransform;
