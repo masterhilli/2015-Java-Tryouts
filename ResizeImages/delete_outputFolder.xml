@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<project default="deleteOuputFolder" basedir=".">
+	<property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="${dir.buildfile}/.."/>
+    <property name="dir.jarfile" value="${dir.buildfile}"/>
+	<target name="deleteOuputFolder">
+		<delete>
+		    <fileset dir="${dir.buildfile}/tst/output/" includes="*"/>
+		</delete>
+	</target>
+</project>
