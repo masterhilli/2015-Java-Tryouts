@@ -1,0 +1,3 @@
+* make webserver For Retieve Hour Usage
+* make programm that goes through images and resizes them to smaller size and creates folders like: low_res orig_res
+* make website that only shows you small res and you can decide what happens with pic (archive, rename, a.s.o.)
