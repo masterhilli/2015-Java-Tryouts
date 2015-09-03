@@ -1,10 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>jquery examples</title>
+
+<link href="jquery-ui.min.css" />
+<script src="jquery-2.1.4.min.js" ></script>
+<script src="jquery-ui.min.js"></script>
+<style>
+a.test {
+    font-weight: bold;
+}
+</style>
 </head>
 <body>
+<script type="text/javascript">
+ window.onload = function() {
+	 alert("Seas");
+ };
 
+ $( document ).ready(function() {
+	 
+    alert("Document ready SEAS");
+ 
+});
+ 
+ $(document).ready(function() {
+	$("a").click(function () {
+		alert("You just clicked a text!!! huuurrraaayyyy");
+		
+		// with this way you prevent the default behaviour of an element!
+		event.preventDefault();
+	})
+ });
+ 
+ 
+
+ 
+</script>
+ <a href="http://jquery.com">
+ 
+ Any given text as long as i see that here happens something.
+ </a>
 </body>
 </html>
