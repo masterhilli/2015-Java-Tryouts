@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<link rel="stylesheet"
+	href="http://jqueryui.com/jquery-wp-content/themes/jquery/css/base.css?v=1">
+<link rel="stylesheet"
+	href="http://jqueryui.com/jquery-wp-content/themes/jqueryui.com/style.css">
+<link href="jquery-ui.min.css" />
+<script src="jquery-2.1.4.min.js"></script>
+<script src="jquery-ui.min.js"></script>
+</head>
+<body>
+	<div id="container">
+		<nav id="main" class="constrain clearfix">
+			<div class="menu-top-container">
+				<ul id="menu-top" class="menu l_tinynav2">
+					<li class="menu-item current"><a
+						href="./jQuery UI Demos _ jQuery UI_files/jQuery UI Demos _ jQuery UI.html">Demos</a>
+					</li>
+				</ul>
+				<select id="tinynav2" class="tinynav tinynav2">
+					<option>Navigate...</option>
+					<option value="http://jqueryui.com/demos/">Demos</option>
+				</select>
+			</div>
+		</nav>
+
+		<!-- 				<form method="get" class="searchform" action="http://jqueryui.com/"> -->
+		<!-- 					<button type="submit" class="icon-search"> -->
+		<!-- 						<span class="visuallyhidden">search</span> -->
+		<!-- 					</button> -->
+		<!-- 					<label> -->
+		<!-- 						<span class="visuallyhidden">Search jQuery UI</span> -->
+		<!-- 						<input type="text" name="s" value="" placeholder="Search"> -->
+		<!-- 						</label> -->
+		<!-- 					</form> -->
+		<div id="content-wrapper" class="clearfix row">
+			<div class="content-right twelve columns">
+				<div id="content">
+					<h1 class="entry-title">Mein nutzloser Versuch</h1>
+					<div id="mytest">
+						<p style="background-color: green;">Mein sehr seriöser Text. Aber bitte wenn sie ihn so wollen,
+							so solle es doch so sein! Achja wenn man hier blöd drauf clickt,
+							passiert etwas. Ich habe aber noch keine Ahnung was ;)</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<footer class="clearfix simple">
+		<div class="constrain"></div>
+	</footer>
+	<script>
+	var myclicker = function() {
+		alert("Seas2");
+
+		event.preventDefault();
+	};
+		$(document).ready(function() {
+			$("p").click(myclicker)
+		});
+	</script>
+</body>
+</html>
