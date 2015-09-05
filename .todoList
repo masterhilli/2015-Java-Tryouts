@@ -1,3 +1,10 @@
 * make webserver For Retieve Hour Usage
+** retrieve hour usage done
+** create a webservlet that reads in the csv files and displays the times
+** further question: read out information about hour usage from JIRA?
 * make programm that goes through images and resizes them to smaller size and creates folders like: low_res orig_res
+** can be a commandline tool
+** might be kwl if it also renames the files, so that they are ordered correctly
 * make website that only shows you small res and you can decide what happens with pic (archive, rename, a.s.o.)
+** website that can be used with key strokes.
+* someday make connection to database and create an user login
