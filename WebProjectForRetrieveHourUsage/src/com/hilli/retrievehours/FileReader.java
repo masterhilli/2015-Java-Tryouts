@@ -1,33 +1,25 @@
 package com.hilli.retrievehours;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
 public class FileReader {
-
+	public static List<String> listFilesForFolder(final String folder) {
+		List<String> filesInFolder = new ArrayList<String>();
+		try {
+			Files.walk(Paths.get(folder)).forEach(filePath -> {
+			    if (Files.isRegularFile(filePath)) {
+			        System.out.println(filePath);
+			        filesInFolder.add(filePath.getFileName().toString());
+			    }
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return filesInFolder;
+	}
 }
-
-
-/*
-
-public void listFilesForFolder(final File folder) {
-    for (final File fileEntry : folder.listFiles()) {
-        if (fileEntry.isDirectory()) {
-            listFilesForFolder(fileEntry);
-        } else {
-            System.out.println(fileEntry.getName());
-        }
-    }
-}
-
-final File folder = new File("/home/you/Desktop");
-listFilesForFolder(folder);
-Edit: This API is now available from Java 8.
-
-Files.walk(Paths.get("/home/you/Desktop")).forEach(filePath -> {
-    if (Files.isRegularFile(filePath)) {
-        System.out.println(filePath);
-    }
-});
-
-
-
-
-*/

@@ -10,5 +10,6 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="D:/IDE/EclipseIDE/eclipseEE/plugins/javax.servlet_3.1.0.v201410161800.jar"/>
 	<classpathentry kind="lib" path="D:/IDE/sdk/gson/gson-2.3.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
