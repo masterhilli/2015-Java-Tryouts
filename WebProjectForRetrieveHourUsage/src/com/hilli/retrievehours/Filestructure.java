@@ -120,7 +120,7 @@ public class Filestructure extends HttpServlet {
 		Gson gson = new Gson();
 		JsonObject myObj = new JsonObject();
 
-		FileInfo fileInfo = new FileInfo("D:\\dev\\2015_javatryouts\\ResizeImages\\tst\\test2.jpg");
+		FileInfo fileInfo = new FileInfo("D:\\dev\\2015_javatryouts\\ResizeImages\\tst\\test1_head.jpg");
 		// Country countryInfo =getInfo(fileInfo);
 		JsonElement fileObj = gson.toJsonTree(fileInfo);
 		if (fileInfo.getFirstEntry() == null) {

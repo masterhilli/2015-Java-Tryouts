@@ -19,7 +19,7 @@ public class ImageResizerTest {
 	private static final String TEST1_HEAD_JPG = "test1_head.jpg";
 	private static final String TEST1_JPG = "test1.jpg";
 	
-	private static String TEST_FOLDER_PATH = "D:\\dev\\2015_JavaTryouts\\2015-Java-Tryouts\\ResizeImages\\tst\\";
+	private static String TEST_FOLDER_PATH = "D:\\dev\\2015_javatryouts\\ResizeImages\\tst\\";
 	private static String TEST_FOLDER_OUTPUT_PATH = TEST_FOLDER_PATH + "output\\";
 	
 	private static ImageResizer imageResizerMax1500;
