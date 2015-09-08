@@ -35,10 +35,69 @@
 	float: left;
 	margin: 10px;
 }
+
+#resizable {
+	width: 250px;
+	height: 150px;
+	padding: 0.5em;
+}
+
+#resizable h3 {
+	text-align: center;
+	margin: 0;
+}
+
+#feedback {
+	font-size: 1.4em;
+}
+
+#selectable .ui-selecting {
+	background: #FECA40;
+}
+
+#selectable .ui-selected {
+	background: #F39814;
+	color: white;
+}
+
+#selectable {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	width: 60%;
+}
+
+#selectable li {
+	margin: 3px;
+	padding: 0.4em;
+	font-size: 1.4em;
+	height: 18px;
+}
+
+#sortable {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	width: 60%;
+}
+
+#sortable li {
+	margin: 0 3px 3px 3px;
+	padding: 0.4em;
+	padding-left: 1.5em;
+	font-size: 1.4em;
+	height: 18px;
+}
+
+#sortable li span {
+	position: absolute;
+	margin-left: -1.3em;
+}
 </style>
 <script>
 	$(function() {
 		$("#draggable1").draggable();
+		$("#droppable").draggable();
 		$("#droppable").droppable(
 				{
 					drop : function(event, ui) {
@@ -46,18 +105,22 @@
 								"Dropped!");
 					}
 				});
+		$("#resizable").resizable();
+		$("#selectable").selectable();
+		$("#sortable").sortable();
+		$("#sortable").disableSelection();
 	});
 </script>
 <title>Interaction Examples for jquery ui</title>
 
 </head>
 <body>
-	<div>
+	<section class="ui-widget-content">
 		<div id="draggable" class="ui-widget-content">
 			<p>Drag me around</p>
 		</div>
-	</div>
-	<div>
+	</section>
+	<section class="ui-widget-content">
 		<div id="draggable1" class="ui-widget-content">
 			<p>Drag me to my target</p>
 		</div>
@@ -65,6 +128,43 @@
 		<div id="droppable" class="ui-widget-header">
 			<p>Drop here</p>
 		</div>
-	</div>
+	</section>
+	<section class="ui-widget-content">
+		<div id="resizable">
+			<h3 class="ui-widget-header">Resizable</h3>
+			<div id="draggable1" class="ui-widget-content">
+				<p>Drag me to my target</p>
+			</div>
+		</div>
+	</section>
+	<section class="ui-widget-content">
+		<ol id="selectable">
+			<li class="ui-widget-content">Item 1</li>
+			<li class="ui-widget-content">Item 2</li>
+			<li class="ui-widget-content">Item 3</li>
+			<li class="ui-widget-content">Item 4</li>
+			<li class="ui-widget-content">Item 5</li>
+			<li class="ui-widget-content">Item 6</li>
+			<li class="ui-widget-content">Item 7</li>
+		</ol>
+	</section>
+	<section class="ui-widget-content">
+		<ul id="sortable">
+			<li class="ui-state-default"><span
+				class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 1</li>
+			<li class="ui-state-default"><span
+				class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 2</li>
+			<li class="ui-state-default"><span
+				class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 3</li>
+			<li class="ui-state-default"><span
+				class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 4</li>
+			<li class="ui-state-default"><span
+				class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 5</li>
+			<li class="ui-state-default"><span
+				class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 6</li>
+			<li class="ui-state-default"><span
+				class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 7</li>
+		</ul>
+	</section>
 </body>
 </html>
